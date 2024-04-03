@@ -1,9 +1,5 @@
 <template>
   <q-item
-    clickable
-    tag="a"
-    target="_blank"
-    :href="link"
   >
     <q-item-section
       v-if="icon"
@@ -12,15 +8,17 @@
       <q-icon :name="icon" />
     </q-item-section>
 
+    <router-link :to="link">
     <q-item-section>
       <q-item-label>{{ title }}</q-item-label>
-      <q-item-label caption>{{ caption }}</q-item-label>
     </q-item-section>
+    </router-link>
   </q-item>
 </template>
 
 <script>
 import { defineComponent } from 'vue'
+import { RouterLink } from 'vue-router'
 
 export default defineComponent({
   name: 'EssentialLink',
@@ -28,11 +26,6 @@ export default defineComponent({
     title: {
       type: String,
       required: true
-    },
-
-    caption: {
-      type: String,
-      default: ''
     },
 
     link: {
