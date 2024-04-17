@@ -1,95 +1,16 @@
-<!-- <template>
+<template>
   <q-page class="q-pa-md">
-    <q-carousel
-      v-model="slide"
-      infinite
-      swipeable
-      control-color="black"
-      navigation
-      padding
-      arrows
-      class="outline shadow-1 rounded-borders"
-    >
-      <q-carousel-slide name="upcoming" class="column no-wrap flex-center">
-        <div class="q-mt-md text-center">
-          <div class="text-h3 q-pa-lg">Upcoming Interviews</div>
-          <div>
-            <q-table :rows="upcomingEntretiens" :columns="columns" row-key="id"></q-table>
-          </div>
-        </div>
-      </q-carousel-slide>
-
-      <q-carousel-slide name="past" class="column no-wrap flex-center">
-        <div class="q-mt-md text-center">
-          <div class="text-h3">Past Interviews</div>
-          <div>
-            <q-table :rows="pastEntretiens" :columns="columns" row-key="id"></q-table>
-          </div>
-        </div>
-      </q-carousel-slide>
-    </q-carousel>
-  </q-page>
-</template>
-
-<script>
-import { defineComponent, ref, computed } from 'vue'
-import { employees, entretiens } from '../data/data' // Adjust the path as necessary
-
-export default defineComponent({
-  name: 'EntretienPage',
-
-  setup() {
-    const slide = ref('upcoming')
-    const now = new Date()
-
-    const getEmployee = (id) => {
-      return employees.find(emp => emp.id === id)
-    }
-
-    const getEmployeeName = (id) => {
-      const employee = getEmployee(id)
-      return employee ? `${employee.name.trim()} ${employee.surname.trim()}` : 'Unknown'
-    }
-
-    const columns = [
-      { name: 'id', required: true, label: 'ID', align: 'left', field: row => row.id, sortable: true },
-      { name: 'employee', label: 'Employee', field: row => getEmployeeName(row.employeeId), sortable: true },
-      { name: 'manager', label: 'Manager', field: row => getEmployeeName(getEmployee(row.employeeId).managerId), sortable: true },
-      { name: 'date', label: 'Date', field: row => new Date(row.date).toLocaleString(), sortable: true },
-    ]
-
-    const upcomingEntretiens = computed(() => {
-      return entretiens.filter(e => new Date(e.date) > now)
-    })
-
-    const pastEntretiens = computed(() => {
-      return entretiens.filter(e => new Date(e.date) <= now)
-    })
-
-    return {
-      slide,
-      upcomingEntretiens,
-      pastEntretiens,
-      columns
-    }
-  }
-})
-</script>
-
-<style>
-/* Add your style customization if needed */
-</style>
-
- -->
-
- <template>
-  <q-page class="q-pa-md">
-    <q-btn color="primary" label="Add Entretien" @click="showAddEntretienModal = true"></q-btn>
+    <q-btn
+      color="primary"
+      label="Add Entretien"
+      class="q-ma-sm"
+      @click="showAddEntretienModal = true"
+    ></q-btn>
 
     <q-dialog v-model="showAddEntretienModal">
       <q-card>
         <q-card-section>
-          <div class="text-h6">Add New Entretien</div>
+          <div class="text-h6 text-center">Add New Entretien</div>
         </q-card-section>
 
         <q-card-section>
@@ -102,6 +23,7 @@ export default defineComponent({
               map-options
               option-value="id"
               option-label="name"
+              class="q-ma-sm"
             ></q-select>
 
             <q-select
@@ -112,13 +34,13 @@ export default defineComponent({
               map-options
               option-value="id"
               option-label="name"
+              class="q-ma-sm"
             ></q-select>
-
-            <q-input v-model="newEntretien.date" filled label="Entretien Date">
-              <template v-slot:append>
+            <q-input v-model="newEntretien.date" filled label="Entretien Date" class="q-ma-sm">
+              <template v-slot:prepend>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                    <q-date v-model="newEntretien.date" :mask="newEntretien.date" minimal>
+                    <q-date v-model="newEntretien.date" mask="YYYY-MM-DD HH:mm" minimal>
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat />
                       </div>
@@ -126,8 +48,19 @@ export default defineComponent({
                   </q-popup-proxy>
                 </q-icon>
               </template>
+              <template v-slot:append>
+                <q-icon name="access_time" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-time v-model="newEntretien.date" mask="YYYY-MM-DD HH:mm" format24h>
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
+                    </q-time>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
             </q-input>
-            <q-btn label="Add Entretien" type="submit" color="primary"></q-btn>
+            <q-btn label="Add Entretien" type="submit" color="primary" class="q-ma-sm"></q-btn>
           </q-form>
         </q-card-section>
       </q-card>
@@ -178,14 +111,36 @@ export default defineComponent({
     const now = new Date()
 
     const columns = [
-      { name: 'id', required: true, label: 'ID', align: 'left', field: row => row.id, sortable: true },
-      { name: 'employee', label: 'Employee', field: row => getEmployeeName(row.employeeId), sortable: true },
-      { name: 'manager', label: 'Manager', field: row => getEmployeeName(row.managerId), sortable: true },
-      { name: 'date', label: 'Date', field: row => new Date(row.date).toLocaleString(), sortable: true },
+      {
+        name: 'id',
+        required: true,
+        label: 'ID',
+        align: 'left',
+        field: (row) => row.id,
+        sortable: true
+      },
+      {
+        name: 'employee',
+        label: 'Employee',
+        field: (row) => getEmployeeName(row.employeeId),
+        sortable: true
+      },
+      {
+        name: 'manager',
+        label: 'Manager',
+        field: (row) => getEmployeeName(row.managerId),
+        sortable: true
+      },
+      {
+        name: 'date',
+        label: 'Date',
+        field: (row) => new Date(row.date).toLocaleString(),
+        sortable: true
+      }
     ]
 
     const getEmployee = (id) => {
-      return employees.find(emp => emp.id === id)
+      return employees.find((emp) => emp.id === id)
     }
 
     const getEmployeeName = (id) => {
@@ -194,23 +149,32 @@ export default defineComponent({
     }
 
     const employeeOptions = computed(() => {
-      return employees.map(emp => ({ id: emp.id, name: `${emp.name.trim()} ${emp.surname.trim()}` }))
+      return employees.map((emp) => ({
+        id: emp.id,
+        name: `${emp.name.trim()} ${emp.surname.trim()}`
+      }))
     })
 
     const managerOptions = computed(() => {
-      return employees.filter(emp => emp.role.trim() === 'Manager').map(emp => ({ id: emp.id, name: `${emp.name.trim()} ${emp.surname.trim()}` }))
+      return employees
+        .filter((emp) => emp.role.trim() === 'Manager')
+        .map((emp) => ({ id: emp.id, name: `${emp.name.trim()} ${emp.surname.trim()}` }))
     })
 
     const upcomingEntretiens = computed(() => {
-      return entretiens.filter(e => new Date(e.date) > now)
+      return entretiens.filter((e) => new Date(e.date) > now)
     })
 
     const pastEntretiens = computed(() => {
-      return entretiens.filter(e => new Date(e.date) <= now)
+      return entretiens.filter((e) => new Date(e.date) <= now)
     })
 
     function addEntretien() {
-      entretiens.push({ ...newEntretien, id: entretiens.length + 1, date: new Date(newEntretien.date).toISOString() })
+      entretiens.push({
+        ...newEntretien,
+        id: entretiens.length + 1,
+        date: new Date(newEntretien.date).toISOString()
+      })
       showAddEntretienModal.value = false
       newEntretien.employeeId = ''
       newEntretien.managerId = ''

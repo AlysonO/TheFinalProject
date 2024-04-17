@@ -43,9 +43,13 @@
 import { ref } from 'vue'
 import { defineComponent } from 'vue'
 import { employees, entretiens } from 'src/data/data'
+import router from 'src/router'
 
 const user = localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null
 
+if (!user) {
+  router.push('/login')
+}
 const getManages = (id) => {
   return employees.filter((employee) => employee.managerId === id)
 }
