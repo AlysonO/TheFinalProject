@@ -31,7 +31,7 @@
           <q-form @submit.prevent="submitEmployee">
             <q-input v-model="formEmployee.name" label="Name" required />
             <q-input v-model="formEmployee.surname" label="Surname" required />
-            <q-input v-model="formEmployee.email" label="Email" required />
+            <q-input v-model="formEmployee.mail  " label="mail   " required />
             <q-input v-model.number="formEmployee.managerId" label="Manager ID" type="number" required />
             <q-input v-model.number="formEmployee.phoneNumber" label="Phone Number" type="number" required />
             <div class="button-group">
@@ -52,6 +52,8 @@
 </template>
 
 <script>
+import { employees } from 'src/data/data.js'
+
 export default {
   name: 'ManagesPage',
   data() {
@@ -63,20 +65,16 @@ export default {
         id: null,
         name: '',
         surname: '',
-        email: '',
+        mail: '',
         managerId: '',
         phoneNumber: ''
       },
-      employees: [
-        { id: 1, name: 'Alice', surname: 'Johnson', email: 'alice.johnson@example.com', managerId: 1001, phoneNumber: 1234567890 },
-        { id: 2, name: 'Bob', surname: 'Smith', email: 'bob.smith@example.com', managerId: 1002, phoneNumber: 2345678901 },
-        { id: 3, name: 'Carol', surname: 'Davis', email: 'carol.davis@example.com', managerId: 1003, phoneNumber: 3456789012 }
-      ],
+      employees: [],
       columns: [
         { name: 'name', required: true, label: 'Name', align: 'left', field: 'name', sortable: true },
         { name: 'surname', required: true, label: 'Surname', align: 'left', field: 'surname', sortable: true },
-        { name: 'email', required: true, label: 'Email', align: 'left', field: 'email', sortable: true },
-        { name: 'managerId', required: true, label: 'Manager ID', align: 'left', field: 'managerId', sortable: true },
+        { name: 'mail', required: true, label: 'mail', align: 'left', field: 'email', sortable: true },
+        { name: 'managerId', required: true, label: 'Manager ID', align: 'left', field: 'formattedManagerId', sortable: true },
         { name: 'phoneNumber', required: true, label: 'Phone Number', align: 'left', field: 'phoneNumber', sortable: true },
         { name: 'actions', label: 'Actions', align: 'left', field: 'actions' }
       ]
@@ -86,6 +84,13 @@ export default {
     filteredEmployees() {
       return this.employees.filter(employee => employee.name.toLowerCase().includes(this.searchTerm.toLowerCase()))
     }
+  },
+  created() {
+    // Initialize employees and format managerId for each row
+    this.employees = employees.map(employee => ({
+      ...employee,
+      formattedManagerId: this.formatManagerId(employee.managerId, employee.role)
+    }))
   },
   methods: {
     deleteEmployee(id) {
@@ -111,11 +116,18 @@ export default {
     },
     closeModal() {
       this.showModal = false
-      this.formEmployee = { id: null, name: '', surname: '', email: '', managerId: '', phoneNumber: '' }
+      this.formEmployee = { id: null, name: '', surname: '', mail: '', managerId: '', phoneNumber: '' }
       this.isEditing = false
     },
     goBack() {
-      this.$router.go(-1) // Assuming you're using Vue Router
+      this.$router.go(-1)
+    },
+    formatManagerId(managerId, role) {
+      if (role === 'Manager') {
+        return `M(${managerId})` // Format managerId for manager
+      } else {
+        return managerId // For employees, display as it is
+      }
     }
   }
 }
@@ -193,7 +205,7 @@ export default {
 .btn-cancel {
   background-color: #dc3545;
   color: white;
-  margin-right: 10px; 
+  margin-right: 10px;
 }
 
 .btn-save {
@@ -234,8 +246,8 @@ export default {
   color: black;
 }
 
-input[type="text"], input[type="email"], input[type="number"] {
-  width: calc(100% - 22px); /* Adjust for padding and borders */
+input[type="text"], input[type="mail "], input[type="number"] {
+  width: calc(100% - 22px);
   padding: 10px;
   margin: 8px 0;
   display: inline-block;
