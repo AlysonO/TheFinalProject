@@ -1,5 +1,10 @@
 import { route } from 'quasar/wrappers'
-import { createRouter, createMemoryHistory, createWebHistory, createWebHashHistory } from 'vue-router'
+import {
+  createRouter,
+  createMemoryHistory,
+  createWebHistory,
+  createWebHashHistory
+} from 'vue-router'
 import routes from './routes'
 
 /*
@@ -14,7 +19,9 @@ import routes from './routes'
 export default route(function (/* { store, ssrContext } */) {
   const createHistory = process.env.SERVER
     ? createMemoryHistory
-    : (process.env.VUE_ROUTER_MODE === 'history' ? createWebHistory : createWebHashHistory)
+    : process.env.VUE_ROUTER_MODE === 'history'
+    ? createWebHistory
+    : createWebHashHistory
 
   const Router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
@@ -24,6 +31,18 @@ export default route(function (/* { store, ssrContext } */) {
     // quasar.conf.js -> build -> vueRouterMode
     // quasar.conf.js -> build -> publicPath
     history: createHistory(process.env.VUE_ROUTER_BASE)
+  })
+
+  Router.beforeEach((to, from, next) => {
+    const isAuthenticated = sessionStorage.getItem('userLoggedIn')
+
+    if (to.matched.some((record) => record.meta.requiresAuth) && !isAuthenticated) {
+      next({ path: '/login', query: { redirect: to.fullPath } }) // Redirect to login if not authenticated
+    } else if (to.path === '/login' && isAuthenticated) {
+      next({ path: '/app/' }) // If authenticated and going to login, redirect to app
+    } else {
+      next() // Proceed normally
+    }
   })
 
   return Router

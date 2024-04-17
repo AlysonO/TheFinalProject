@@ -32,22 +32,22 @@ const linksList = [
   {
     title: 'Dashboard',
     icon: 'school',
-    link: '/dashboard'
+    link: 'app/'
   },
   {
     title: 'Manages',
     icon: 'code',
-    link: '/manages'
+    link: 'app/manages'
   },
   {
     title: 'Entretiens',
     icon: 'chat',
-    link: '/entretiens'
+    link: 'app/entretiens'
   },
   {
     title: 'Logout',
     icon: 'favorite',
-    link: '/logout'
+    link: 'app/logout'
   }
 ]
 
