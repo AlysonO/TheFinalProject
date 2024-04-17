@@ -7,31 +7,27 @@ export const useMainStore = defineStore('mainStore', {
     interviews: []
   }),
   getters: {
-    // i asked to my friend (chat gpt) how to do some references like in data base and he shit me this:
     fullEmployees: (state) => {
-      return state.employees.map(employee => ({
+      return state.employees.map((employee) => ({
         ...employee,
-        address: state.addresses.find(address => address.employee_id === employee.id),
-        interviews: state.interviews.filter(interview => interview.employee_id === employee.id)
-      }));
+        address: state.addresses.find((address) => address.employee_id === employee.id),
+        interviews: state.interviews.filter((interview) => interview.employee_id === employee.id)
+      }))
     }
   },
   actions: {
-    //add or remove some action here , i tried to make some exemple 
-    fetchEmployees() {
-    },
+    //add or remove some action here , i tried to make some exemple
+    fetchEmployees() {},
     addEmployee(employee) {
-      this.employees.push(employee);
+      this.employees.push(employee)
     },
-    fetchAddresses() {
-    },
+    fetchAddresses() {},
     addAddress(address) {
-      this.addresses.push(address);
+      this.addresses.push(address)
     },
-    fetchInterviews() {
-    },
+    fetchInterviews() {},
     addInterview(interview) {
-      this.interviews.push(interview);
+      this.interviews.push(interview)
     }
   }
-});
+})

@@ -32,7 +32,7 @@ const linksList = [
   {
     title: 'Dashboard',
     icon: 'school',
-    link: ''
+    link: '/app/dashboard'
   },
   {
     title: 'Manages',
