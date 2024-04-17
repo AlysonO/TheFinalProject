@@ -38,7 +38,6 @@ export default {
   methods: {
     login() {
       const user = users.find((u) => u.email === this.email)
-      console.log(user)
       if (!user) {
         this.errorMessage = 'Invalid email address'
         this.loginError = true
@@ -47,6 +46,7 @@ export default {
         this.loginError = true
       } else {
         sessionStorage.setItem('userLoggedIn', 'true') // Set user as logged in
+        localStorage.setItem('user', JSON.stringify(user))
         const redirectUrl = this.$route.query.redirect || '/app'
         this.$router.push(redirectUrl) // Navigate based on redirect query if available, otherwise to app
       }
