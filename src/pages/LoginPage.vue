@@ -40,7 +40,6 @@ export default {
       const user = users.find((u) => u.email === this.email)
       console.log(user)
       if (!user) {
-        console.log('stop')
         this.errorMessage = 'Invalid email address'
         this.loginError = true
       } else if (user.password !== this.password) {
