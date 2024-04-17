@@ -35,8 +35,9 @@ export const addresses = [
 ]
 
 export const entretiens = [
-  { id: 1, managerId: 1, employeeId: 2 },
-  { id: 2, managerId: 1, employeeId: 3 }
+  { id: 1, managerId: 1, employeeId: 2, date: '2022-10-22T10:32:02.001' },
+  { id: 2, managerId: 1, employeeId: 3, date: '2023-10-22T10:32:02.001' },
+  { id: 3, managerId: 1, employeeId: 3, date: '2025-10-22T10:32:02.001' },
 ]
 
 export const users = [
