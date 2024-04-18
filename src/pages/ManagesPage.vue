@@ -29,15 +29,14 @@
       <q-card class="modal-content">
         <q-card-section>
           <q-form @submit.prevent="submitEmployee">
-            <q-input v-model="formEmployee.name" label="Name" required />
-            <q-input v-model="formEmployee.surname" label="Surname" required />
-            <q-input v-model="formEmployee.mail  " label="mail   " required />
+            <q-input v-model.trim="formEmployee.name" label="Name" required />
+            <q-input v-model.trim="formEmployee.surname" label="Surname" required />
+            <q-input v-model.trim="formEmployee.mail" label="Email" required />
             <q-input v-model.number="formEmployee.managerId" label="Manager ID" type="number" required />
             <q-input v-model.number="formEmployee.phoneNumber" label="Phone Number" type="number" required />
             <div class="button-group">
               <q-btn type="submit" label="Save" color="primary" class="btn-save" />
-              <q-btn v-if="isEditing" label="Cancel" color="negative" class="btn-cancel" @click="closeModal" />
-              <q-btn v-else label="Cancel" class="btn-cancel" @click="closeModal" />
+              <q-btn :label="isEditing ? 'Cancel' : 'Close'" color="negative" class="btn-cancel" @click="closeModal" />
             </div>
           </q-form>
         </q-card-section>
@@ -45,11 +44,12 @@
     </q-dialog>
 
     <!-- Button to add new employee -->
-    <q-fab class="add-btn" right bottom @click="showModal = true">
+    <q-fab class="add-btn" right bottom @click="addNewEmployee">
       <q-btn icon="add" color="primary" />
     </q-fab>
   </q-page>
 </template>
+
 
 <script>
 import { employees } from 'src/data/data.js'
@@ -73,7 +73,7 @@ export default {
       columns: [
         { name: 'name', required: true, label: 'Name', align: 'left', field: 'name', sortable: true },
         { name: 'surname', required: true, label: 'Surname', align: 'left', field: 'surname', sortable: true },
-        { name: 'mail', required: true, label: 'mail', align: 'left', field: 'email', sortable: true },
+        { name: 'mail', required: true, label: 'Email', align: 'left', field: 'mail', sortable: true },
         { name: 'managerId', required: true, label: 'Manager ID', align: 'left', field: 'formattedManagerId', sortable: true },
         { name: 'phoneNumber', required: true, label: 'Phone Number', align: 'left', field: 'phoneNumber', sortable: true },
         { name: 'actions', label: 'Actions', align: 'left', field: 'actions' }
@@ -86,13 +86,22 @@ export default {
     }
   },
   created() {
-    // Initialize employees and format managerId for each row
-    this.employees = employees.map(employee => ({
+  this.employees = employees.map(employee => {
+    const managerId = employee.managerId === null && employee.role.trim() === 'Manager' ? employee.id : employee.managerId
+
+    return {
       ...employee,
-      formattedManagerId: this.formatManagerId(employee.managerId, employee.role)
-    }))
-  },
+      formattedManagerId: this.formatManagerId(managerId, employee.role)
+    }
+  })
+},
+
   methods: {
+    addNewEmployee() {
+      this.formEmployee = { id: null, name: '', surname: '', mail: '', managerId: '', phoneNumber: '' }
+      this.isEditing = false
+      this.showModal = true
+    },
     deleteEmployee(id) {
       this.employees = this.employees.filter(employee => employee.id !== id)
     },
@@ -105,30 +114,25 @@ export default {
       if (this.isEditing) {
         const index = this.employees.findIndex(emp => emp.id === this.formEmployee.id)
         if (index !== -1) {
-          this.employees.splice(index, 1, { ...this.formEmployee })
+          this.employees[index] = { ...this.formEmployee, formattedManagerId: this.formatManagerId(this.formEmployee.managerId, this.formEmployee.role) }
         }
-        this.isEditing = false
       } else {
         const newId = this.employees.length ? this.employees[this.employees.length - 1].id + 1 : 1
-        this.employees.push({ ...this.formEmployee, id: newId })
+        this.employees.push({ ...this.formEmployee, id: newId, formattedManagerId: this.formatManagerId(this.formEmployee.managerId, this.formEmployee.role) })
       }
       this.closeModal()
     },
     closeModal() {
       this.showModal = false
-      this.formEmployee = { id: null, name: '', surname: '', mail: '', managerId: '', phoneNumber: '' }
-      this.isEditing = false
-    },
-    goBack() {
-      this.$router.go(-1)
     },
     formatManagerId(managerId, role) {
-      if (role === 'Manager') {
-        return `M(${managerId})` // Format managerId for manager
-      } else {
-        return managerId // For employees, display as it is
-      }
-    }
+  if (role.trim() === 'Manager') {
+    return `M(${managerId})`
+  } else {
+    return managerId ? managerId.toString() : 'N/A'
+  }
+},
+
   }
 }
 </script>
@@ -169,43 +173,16 @@ export default {
   margin-right: 10px;
 }
 
-.btn {
+.btn-save, .btn-cancel {
   padding: 8px 16px;
-  margin-right: 8px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   outline: none;
 }
 
-.btn:hover {
+.btn-save:hover, .btn-cancel:hover {
   filter: brightness(85%);
-}
-
-.btn-delete {
-  background-color: #dc3545;
-  color: white;
-}
-
-.btn-edit {
-  background-color: #ffc107;
-  color: black;
-}
-
-.btn-new {
-  background-color: #28a745;
-  color: white;
-}
-
-.btn-back {
-  background-color: #1877d2;
-  color: white;
-}
-
-.btn-cancel {
-  background-color: #dc3545;
-  color: white;
-  margin-right: 10px;
 }
 
 .btn-save {
@@ -214,44 +191,34 @@ export default {
   margin-right: 10px;
 }
 
-/* Modal styles */
+.btn-cancel {
+  background-color: #dc3545;
+  color: white;
+}
+
+/* Modal Overlay styles */
 .modal {
   position: fixed;
-  z-index: 1;
+  z-index: 1000;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.4);
 }
 
+/* Modal Content styles */
 .modal-content {
   background-color: #fefefe;
-  margin: 10% auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 50%;
+  width: 80%;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  max-width: 600px;
 }
 
-.close {
-  color: #aaa;
-  font-size: 20px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
-}
-
-.close:hover {
-  color: black;
-}
-
-input[type="text"], input[type="mail "], input[type="number"] {
-  width: calc(100% - 22px);
-  padding: 10px;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  box-sizing: border-box;
-}
 </style>
